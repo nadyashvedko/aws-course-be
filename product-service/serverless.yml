@@ -1,0 +1,29 @@
+service: product-service
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: eu-west-1
+
+functions:
+  getProductsList:
+    handler: handler.getProductsList
+    events:
+      - http:
+          path: product
+          method: get
+          cors: true
+
+  getProductsById:
+    handler: handler.getProductsById
+    events:
+      - http:
+          path: product/{productId}
+          method: get
+          request:
+            parameters:
+              paths:
+                productId: true
+          cors: true
