@@ -6,6 +6,14 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: eu-west-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource:
+        - arn:aws:dynamodb:*:*:table/*
 
 functions:
   getProductsList:
@@ -16,8 +24,8 @@ functions:
           method: get
           cors: true
 
-  getProductsById:
-    handler: handler.getProductsById
+  getProductById:
+    handler: handler.getProductById
     events:
       - http:
           path: product/{productId}
@@ -27,3 +35,56 @@ functions:
               paths:
                 productId: true
           cors: true
+
+  createProduct:
+    handler: handler.createProduct
+    events:
+      - http:
+          path: product
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    products:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: products
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    stocks:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: stocks
+        AttributeDefinitions:
+          - AttributeName: product_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: product_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    DynamoDBIamPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+        PolicyName: lambda-dynamodb
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+                - dynamodb:Get
+              Resource: arn:aws:dynamodb:*:*:table/*
+        Roles:
+          - Ref: IamRoleLambdaExecution
