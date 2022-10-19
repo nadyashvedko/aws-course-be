@@ -2,6 +2,8 @@
 
 const AWS = require('aws-sdk');
 
+const documentClient = new AWS.DynamoDB.DocumentClient();
+
 module.exports = async (_event) => {
     const productsTableParams = {
         TableName: "products"
@@ -10,7 +12,6 @@ module.exports = async (_event) => {
     const stocksTableParams = {
         TableName: "stocks"
     };
-    const documentClient = new AWS.DynamoDB.DocumentClient();
 
     let responseBody;
     let statusCode;

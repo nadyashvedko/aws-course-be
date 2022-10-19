@@ -3,10 +3,10 @@
 const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
 
+const documentClient = new AWS.DynamoDB.DocumentClient();
+
 module.exports = async (event) => {
     const data = JSON.parse(event.body);
-
-    const documentClient = new AWS.DynamoDB.DocumentClient();
 
     const id = uuidv4();
 

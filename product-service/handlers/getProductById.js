@@ -2,9 +2,10 @@
 
 const AWS = require('aws-sdk');
 
+const documentClient = new AWS.DynamoDB.DocumentClient();
+
 module.exports = async (event) => {
     const id = event.pathParameters.productId;
-    const documentClient = new AWS.DynamoDB.DocumentClient();
 
     const productsTableParams = {
         TableName: "products",
