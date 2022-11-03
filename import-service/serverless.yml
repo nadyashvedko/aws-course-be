@@ -31,10 +31,13 @@ functions:
                 name: true
   importFileParser:
     handler: handler.importFileParser
-    event: s3:ObjectCreated:*
-    rules:
-      - prefix : uploaded/
-    existing: true
-    bucket: arn:aws:s3:::import-service-dev-serverlessdeploymentbucket-1hs17dz9g6baq
+    events:
+      - s3:
+         bucket: import-service-dev-serverlessdeploymentbucket-1hs17dz9g6baq
+         event: s3:ObjectCreated:*
+         rules:
+            - prefix : uploaded/
+         existing: true
+
 
 

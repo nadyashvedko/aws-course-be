@@ -6,7 +6,7 @@ const csv = require('csv-parser');
 
 module.exports = async (event) => {
     const parsedCsv = [];
-    const {key} = event.Records[0].s3.object;
+    const key = event['Records'][0]['s3']['object']['key'];
 
     const objectParams = {
         Bucket: process.env.BUCKET_NAME,
@@ -14,11 +14,11 @@ module.exports = async (event) => {
     }
     const s3Stream = s3.getObject(objectParams).createReadStream();
 
-    for await (const chunk of (s3Stream).pipe(csv())) {
-        parsedCsv.push(chunk)
-    }
-
-    parsedCsv.forEach(item => console.log(item));
+    s3Stream.pipe(csv())
+        .on('data', (data) => parsedCsv.push(data))
+        .on('end', () => {
+            parsedCsv.forEach(item => console.log(item));
+        });
 
     const objectCopyParams = {
         Bucket: process.env.BUCKET_NAME,
